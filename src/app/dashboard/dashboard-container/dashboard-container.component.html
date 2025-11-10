@@ -1,0 +1,17 @@
+<!-- <app-navbar></app-navbar>
+<app-global-sidebar></app-global-sidebar> -->
+<div class="flex h-screen overflow-hidden">
+    <!-- Sidebar -->
+    <app-sidebar
+      class="transition-all duration-300"
+    ></app-sidebar>
+  
+    <!-- Main Content Area -->
+    <div class="flex flex-col flex-1">
+      <app-navbar></app-navbar>
+  
+    <main class="flex-1 overflow-y-auto bg-gray-50 p-4">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</div>

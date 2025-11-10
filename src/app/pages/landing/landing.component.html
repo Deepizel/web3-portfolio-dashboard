@@ -1,0 +1,56 @@
+<div class="min-h-screen bg-cover bg-center bg-no-repeat relative flex flex-col font-sans" 
+     [style.background-image]="'url(/assets/images/Barios.jpg)'">
+  <!-- Gradient Overlay -->
+  <div class="absolute inset-0 bg-linear-to-br from-slate-900/85 to-blue-900/75 z-1"></div>
+
+  <!-- Header -->
+  <header class="relative z-10 px-8 py-6">
+    <div class="max-w-[1400px] mx-auto flex items-center justify-between gap-8 flex-wrap">
+      <!-- Logo -->
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 bg-linear-to-br from-blue-500 to-purple-500 rounded-lg flex items-center justify-center text-white font-bold text-xl">
+          B
+        </div>
+        <span class="text-white text-2xl font-semibold tracking-tight">Barios</span>
+      </div>
+
+      <!-- Navigation -->
+      <nav class="flex items-center gap-8 flex-1 justify-center md:order-0 order-3 w-full md:w-auto md:overflow-visible overflow-x-auto pb-2 md:pb-0">
+        <a href="#" class="text-white text-[0.95rem] font-normal no-underline hover:opacity-80 transition-opacity whitespace-nowrap">API</a>
+        <a href="#" class="text-white text-[0.95rem] font-normal no-underline hover:opacity-80 transition-opacity whitespace-nowrap">API Pricing</a>
+        <a href="#" class="text-white text-[0.95rem] font-normal no-underline hover:opacity-80 transition-opacity whitespace-nowrap">Premium</a>
+        <a href="#" class="text-white text-[0.95rem] font-normal no-underline hover:opacity-80 transition-opacity whitespace-nowrap">Security</a>
+        <a href="#" class="text-white text-[0.95rem] font-normal no-underline hover:opacity-80 transition-opacity whitespace-nowrap">Blog</a>
+        <a href="#" class="text-white text-[0.95rem] font-normal no-underline hover:opacity-80 transition-opacity whitespace-nowrap">Help</a>
+        <a href="#" class="text-white text-[0.95rem] font-normal no-underline hover:opacity-80 transition-opacity whitespace-nowrap">About Us</a>
+      </nav>
+
+      <!-- Download Button -->
+      <button class="bg-white text-blue-900 border-none px-5 py-2 md:px-6 md:py-2.5 rounded-lg font-semibold text-sm md:text-[0.95rem] cursor-pointer hover:-translate-y-0.5 hover:shadow-lg hover:shadow-white/20 transition-all" (click)="navigateToDashboard()">
+       Get Started
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="relative z-10 flex-1 flex flex-col items-center justify-center text-center p-8 max-w-[1200px] mx-auto w-full">
+    <p class="text-white text-sm font-normal tracking-wider mb-6 opacity-90">Your Crypto Tracker for Solana and Ethereum</p>
+    
+    <h1 class="text-[clamp(3rem,8vw,6rem)] font-extrabold leading-tight mb-12 text-white">
+      <span class="bg-linear-to-r from-blue-400 via-blue-500 to-blue-600 bg-clip-text text-transparent">Track</span> Your Portfolio
+    </h1>
+
+    <div class="flex gap-6 mb-8 flex-wrap justify-center flex-col md:flex-row w-full md:w-auto">
+
+      <button class="bg-white text-blue-900 border-none px-8 py-4 rounded-xl font-semibold text-base cursor-pointer flex items-center gap-3 transition-all hover:-translate-y-0.5 hover:shadow-2xl hover:shadow-white/30 min-w-[200px] justify-center w-full md:w-auto md:min-w-[200px]" (click)="navigateToDashboard()">
+        <span class="text-xl">💼</span>
+        <span>Track Portfolio</span>
+        
+      </button>
+    </div>
+
+    <p class="text-white text-[0.95rem] mb-4 opacity-90">Try Barios across every device</p>
+    
+    <a href="#" class="text-blue-400 no-underline text-[0.95rem] font-medium hover:text-blue-300 transition-colors">Learn more</a>
+  </main>
+</div>
