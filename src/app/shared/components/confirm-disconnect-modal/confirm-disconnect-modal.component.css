@@ -1,0 +1,13 @@
+.confirm-disconnect-modal {
+  background: #1f1f1f;
+  color: white;
+  min-width: 400px;
+  border-radius: 12px;
+}
+
+@media (max-width: 640px) {
+  .confirm-disconnect-modal {
+    min-width: 90vw;
+  }
+}
+

@@ -1,0 +1,13 @@
+.metamask-modal {
+  background: #1f1f1f;
+  color: white;
+  min-width: 400px;
+  border-radius: 12px;
+}
+
+@media (max-width: 640px) {
+  .metamask-modal {
+    min-width: 90vw;
+  }
+}
+

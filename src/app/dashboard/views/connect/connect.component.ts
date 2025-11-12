@@ -1,6 +1,9 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
 import { WalletService } from '../../../core/services/wallet/wallet.service';
+import { MetaMaskModalComponent } from '../../../shared/components/metamask-modal/metamask-modal.component';
 
 @Component({
   selector: 'app-connect',
@@ -9,7 +12,11 @@ import { WalletService } from '../../../core/services/wallet/wallet.service';
   styleUrl: './connect.component.css'
 })
 export class ConnectComponent {
-  constructor(private walletService: WalletService) {}
+  constructor(
+    private walletService: WalletService,
+    private dialog: MatDialog,
+    private router: Router
+  ) {}
 
   connectWallet(walletType: string) {
     console.log('Connecting to:', walletType);
@@ -18,7 +25,7 @@ export class ConnectComponent {
     switch(walletType) {
       case 'metamask':
       case 'metamask-solana':
-        this.walletService.connectWallet();
+        this.openMetaMaskModal();
         break;
       case 'phantom':
       case 'phantom-solana':
@@ -82,5 +89,23 @@ export class ConnectComponent {
   private connectZerion() {
     // Zerion wallet integration would go here
     console.log('Zerion wallet connection not yet implemented');
+  }
+
+  private openMetaMaskModal() {
+    const dialogRef = this.dialog.open(MetaMaskModalComponent, {
+      width: '450px',
+      maxWidth: '90vw',
+      panelClass: 'metamask-dialog',
+      disableClose: false,
+      data: {}
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result && result.connected) {
+        console.log('MetaMask connected successfully:', result.address);
+        // Navigate to home component after successful connection
+        this.router.navigate(['/dashboard/home']);
+      }
+    });
   }
 }

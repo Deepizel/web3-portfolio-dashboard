@@ -1,6 +1,29 @@
 /* You can add global styles to this file, and also import other style files */
 @import "tailwindcss";
+@import "@angular/material/prebuilt-themes/indigo-pink.css";
 
 body {
   font-family: 'Inter', sans-serif;
+}
+
+/* MetaMask Dialog Styling */
+::ng-deep .metamask-dialog .mat-mdc-dialog-container {
+  background: #1f1f1f !important;
+  padding: 0 !important;
+}
+
+::ng-deep .metamask-dialog .mat-mdc-dialog-surface {
+  background: #1f1f1f !important;
+  border-radius: 12px !important;
+}
+
+/* Confirm Disconnect Dialog Styling */
+::ng-deep .confirm-disconnect-dialog .mat-mdc-dialog-container {
+  background: #1f1f1f !important;
+  padding: 0 !important;
+}
+
+::ng-deep .confirm-disconnect-dialog .mat-mdc-dialog-surface {
+  background: #1f1f1f !important;
+  border-radius: 12px !important;
 }

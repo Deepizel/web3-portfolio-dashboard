@@ -15,7 +15,9 @@ export class SidebarComponent implements OnInit, OnDestroy {
   adminDetails: any;
   sidebarCollapsed: boolean = false;
   isMobile: boolean = false;
+  walletAddress: string | null = null;
   private subscription?: Subscription;
+  private walletSubscription?: Subscription;
   private initialLoad: boolean = true;
 
   constructor(private router: Router,
@@ -32,6 +34,11 @@ export class SidebarComponent implements OnInit, OnDestroy {
     // subscribe to the sidebar collapsed state
     this.subscription = this.sidebarService.sidebarCollapsed$.subscribe((state) => {
       this.sidebarCollapsed = state;
+    });
+
+    // Subscribe to wallet address changes
+    this.walletSubscription = this.walletService.getWalletAddress().subscribe((address) => {
+      this.walletAddress = address;
     });
   }
 
@@ -61,6 +68,14 @@ export class SidebarComponent implements OnInit, OnDestroy {
     if (this.subscription) {
       this.subscription.unsubscribe();
     }
+    if (this.walletSubscription) {
+      this.walletSubscription.unsubscribe();
+    }
+  }
+
+  formatAddress(address: string | null): string {
+    if (!address) return '';
+    return `${address.slice(0, 6)}...${address.slice(-4)}`;
   }
 
   connectWallet() {

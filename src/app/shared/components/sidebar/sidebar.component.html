@@ -24,12 +24,23 @@
       </div>
     }
 
-    <!-- Connect Wallet Button (only show when not collapsed) -->
+    <!-- Wallet Connection Section (only show when not collapsed) -->
     @if (!sidebarCollapsed) {
-      <button class="w-full bg-blue-500 text-white py-3 px-4 rounded-lg font-semibold text-base flex items-center justify-center gap-2 hover:bg-blue-600 transition-colors shadow-lg" (click)="connectWallet()">
-        <span class="text-xl">+</span>
-        <span>Connect Wallet</span>
-      </button>
+      @if (walletAddress) {
+        <!-- Connected Wallet Display -->
+        <div class="w-full bg-green-500/20 border border-green-500/50 text-white py-3 px-4 rounded-lg font-semibold text-sm flex items-center justify-center gap-2">
+          <svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+          <span class="text-green-400">{{ formatAddress(walletAddress) }}</span>
+        </div>
+      } @else {
+        <!-- Connect Wallet Button -->
+        <button class="w-full bg-blue-500 text-white py-3 px-4 rounded-lg font-semibold text-base flex items-center justify-center gap-2 hover:bg-blue-600 transition-colors shadow-lg" (click)="connectWallet()">
+          <span class="text-xl">+</span>
+          <span>Connect Wallet</span>
+        </button>
+      }
     }
   </div>
 

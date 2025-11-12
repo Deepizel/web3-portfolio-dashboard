@@ -1,1 +1,378 @@
-<p>home works!</p>
+<div class="min-h-screen bg-[#0F172A] text-white p-6">
+  <div class="max-w-7xl mx-auto space-y-6">
+    
+    <!-- Empty State: No Wallet Connected -->
+    <div *ngIf="!walletAddress" class="flex flex-col items-center justify-center min-h-[60vh]">
+      <div class="bg-[#1E293B] rounded-xl p-12 border border-[#334155] max-w-md w-full text-center">
+        <div class="w-24 h-24 bg-blue-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
+          <svg class="w-12 h-12 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path>
+          </svg>
+        </div>
+        
+        <h2 class="text-2xl font-bold mb-4">No Wallet Connected</h2>
+        <p class="text-gray-400 mb-8">
+          Connect your wallet to view your portfolio, track your assets, and manage your NFTs.
+        </p>
+        
+        <button 
+          (click)="navigateToConnectWallet()"
+          class="bg-blue-500 hover:bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold text-lg transition-colors inline-flex items-center gap-2">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+          </svg>
+          Connect Wallet
+        </button>
+      </div>
+    </div>
+
+    <!-- Main Content: Wallet Connected -->
+    <div *ngIf="walletAddress">
+      <!-- Header Section -->
+      <div class="bg-[#1E293B] rounded-xl p-6 border border-[#334155]">
+      <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
+        <!-- Left Side: Wallet Info -->
+        <div class="flex-1">
+          <!-- Wallet Address -->
+          <div class="flex items-center gap-2 mb-4">
+            <div class="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
+              <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+              </svg>
+            </div>
+            <span class="text-gray-300 font-medium">{{ formatAddress(walletAddress) || 'Not Connected' }}</span>
+            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+            </svg>
+          </div>
+          
+          <!-- Current Value -->
+          <div class="mb-2">
+            <div class="text-3xl font-bold">${{ totalValue.toFixed(2) }}</div>
+            <div class="flex items-center gap-2 mt-1">
+              <span [class]="changePercent >= 0 ? 'text-green-400' : 'text-red-400'">
+                {{ changePercent >= 0 ? '+' : '' }}{{ changePercent.toFixed(1) }}%
+              </span>
+              <span [class]="changePercent >= 0 ? 'text-green-400' : 'text-red-400'">
+                ({{ changeValue >= 0 ? '+' : '' }}${{ getAbsoluteChangeValue().toFixed(2) }})
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Side: Actions -->
+        <div class="flex flex-col items-end gap-3">
+          <div class="flex items-center gap-3">
+            <button class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg font-semibold text-sm transition-colors">
+              Analyze
+            </button>
+            <button class="p-2 hover:bg-[#334155] rounded-lg transition-colors">
+              <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path>
+              </svg>
+            </button>
+            <button 
+              (click)="openDisconnectModal()"
+              class="text-red-400 hover:text-red-300 text-sm font-medium px-3 py-2 hover:bg-red-500/10 rounded-lg transition-colors">
+              Remove wallet
+            </button>
+          </div>
+          
+          <!-- Network Selector -->
+          <button class="flex items-center gap-2 px-4 py-2 bg-[#334155] hover:bg-[#475569] rounded-lg text-sm font-medium transition-colors">
+            <span>{{ selectedNetwork }}</span>
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Tabs -->
+      <div class="flex gap-1 mt-6 border-b border-[#334155]">
+        <button 
+          (click)="setActiveTab('tokens')"
+          [class]="activeTab === 'tokens' ? 'border-b-2 border-blue-500 text-blue-400 pb-3 px-4 font-semibold' : 'text-gray-400 hover:text-white pb-3 px-4 transition-colors'">
+          Tokens
+        </button>
+        <button 
+          (click)="setActiveTab('nfts')"
+          [class]="activeTab === 'nfts' ? 'border-b-2 border-blue-500 text-blue-400 pb-3 px-4 font-semibold' : 'text-gray-400 hover:text-white pb-3 px-4 transition-colors'">
+          NFTs
+        </button>
+        <button 
+          (click)="setActiveTab('history')"
+          [class]="activeTab === 'history' ? 'border-b-2 border-blue-500 text-blue-400 pb-3 px-4 font-semibold' : 'text-gray-400 hover:text-white pb-3 px-4 transition-colors'">
+          History
+        </button>
+      </div>
+    </div>
+
+    <!-- Tokens Tab Content -->
+    <div *ngIf="activeTab === 'tokens'" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      
+      <!-- Left Column: Performance & Assets -->
+      <div class="lg:col-span-2 space-y-6">
+        
+        <!-- Performance Section -->
+        <div class="bg-[#1E293B] rounded-xl p-6 border border-[#334155]">
+          <div class="flex items-center justify-between mb-4">
+            <div class="flex items-center gap-2">
+              <h2 class="text-xl font-bold">Performance</h2>
+              <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+            </div>
+            <div class="text-right">
+              <div class="text-2xl font-bold">${{ totalValue.toFixed(2) }}</div>
+              <div [class]="changePercent >= 0 ? 'text-green-400' : 'text-red-400'" class="text-sm">
+                {{ changePercent >= 0 ? '+' : '' }}{{ changePercent.toFixed(1) }}% ({{ changeValue >= 0 ? '+' : '' }}${{ getAbsoluteChangeValue().toFixed(2) }})
+              </div>
+            </div>
+          </div>
+          
+          <!-- Graph -->
+          <div class="mb-4">
+            <svg viewBox="0 0 600 200" class="w-full h-48">
+              <!-- Gradient for area fill -->
+              <defs>
+                <linearGradient id="graphGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" style="stop-color:#10b981;stop-opacity:0.3" />
+                  <stop offset="100%" style="stop-color:#10b981;stop-opacity:0" />
+                </linearGradient>
+              </defs>
+              
+              <!-- Area fill -->
+              <path [attr.d]="getGraphAreaPath()" fill="url(#graphGradient)" />
+              
+              <!-- Line -->
+              <path [attr.d]="getGraphPath()" fill="none" stroke="#10b981" stroke-width="2" />
+            </svg>
+          </div>
+          
+          <!-- Time Range Selector -->
+          <div class="flex gap-2">
+            <button 
+              *ngFor="let range of getTimeRanges()"
+              (click)="setTimeRange(range)"
+              [class]="selectedTimeRange === range ? 'bg-blue-500 text-white' : 'bg-[#334155] text-gray-300 hover:bg-[#475569]'"
+              class="px-3 py-1 rounded-lg text-sm font-medium transition-colors">
+              {{ range }}
+            </button>
+          </div>
+        </div>
+
+        <!-- Assets Section -->
+        <div class="bg-[#1E293B] rounded-xl p-6 border border-[#334155]">
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="text-xl font-bold">Assets</h2>
+            <div class="flex items-center gap-2">
+              <button class="px-3 py-1 bg-[#334155] hover:bg-[#475569] rounded-lg text-sm font-medium transition-colors">
+                By App
+              </button>
+              <button class="px-3 py-1 bg-[#334155] hover:bg-[#475569] rounded-lg text-sm font-medium transition-colors">
+                By Token
+              </button>
+              <button class="p-1 hover:bg-[#334155] rounded-lg transition-colors">
+                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path>
+                </svg>
+              </button>
+            </div>
+          </div>
+          
+          <!-- Assets Table -->
+          <div class="overflow-x-auto">
+            <table class="w-full">
+              <thead>
+                <tr class="text-left text-gray-400 text-sm border-b border-[#334155]">
+                  <th class="pb-3">Asset</th>
+                  <th class="pb-3">%</th>
+                  <th class="pb-3">Networks</th>
+                  <th class="pb-3">Price</th>
+                  <th class="pb-3">Balance</th>
+                  <th class="pb-3 text-right">Value</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let asset of assets" class="border-b border-[#334155] hover:bg-[#334155]/50 transition-colors">
+                  <td class="py-4">
+                    <div class="flex items-center gap-3">
+                      <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold">
+                        {{ asset.symbol.charAt(0) }}
+                      </div>
+                      <div>
+                        <div class="font-semibold">{{ asset.name }}</div>
+                        <div class="text-sm text-gray-400">{{ asset.symbol }}</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="py-4 text-gray-300">{{ asset.percentage }}%</td>
+                  <td class="py-4 text-gray-300 text-sm">{{ asset.networks }}</td>
+                  <td class="py-4 text-gray-300">{{ asset.price }}</td>
+                  <td class="py-4 text-gray-300">{{ asset.balance }}</td>
+                  <td class="py-4 text-right">
+                    <div class="font-semibold">{{ asset.value }}</div>
+                    <div [class]="asset.change >= 0 ? 'text-green-400' : 'text-red-400'" class="text-sm">
+                      {{ asset.change >= 0 ? '+' : '' }}{{ asset.change.toFixed(2) }}% ({{ asset.changeValue }})
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column: History -->
+      <div class="lg:col-span-1">
+        <div class="bg-[#1E293B] rounded-xl p-6 border border-[#334155] h-full">
+          <h2 class="text-xl font-bold mb-4">History</h2>
+          
+          <!-- Transactions List -->
+          <div class="space-y-3 max-h-[600px] overflow-y-auto">
+            <div *ngFor="let tx of transactions" class="flex items-center justify-between p-3 bg-[#0F172A] rounded-lg hover:bg-[#1E293B] transition-colors">
+              <div class="flex-1">
+                <div class="font-semibold text-sm">{{ tx.type }}</div>
+                <div class="text-xs text-gray-400 mt-1">{{ tx.date }}</div>
+              </div>
+              <div class="text-right">
+                <div class="text-sm font-medium" [class]="tx.amount.startsWith('+') ? 'text-green-400' : 'text-gray-300'">
+                  {{ tx.amount }}
+                </div>
+                <div *ngIf="tx.token" class="text-xs text-gray-400 mt-1">{{ tx.token }}</div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- See All Button -->
+          <button class="w-full mt-4 py-2 text-center text-blue-400 hover:text-blue-300 font-medium transition-colors">
+            See all
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- NFTs Tab Content -->
+    <div *ngIf="activeTab === 'nfts'" class="space-y-6">
+      <!-- Total Value Section -->
+      <div class="bg-[#1E293B] rounded-xl p-6 border border-[#334155]">
+        <div class="text-sm text-gray-400 mb-2">Total value by floor price</div>
+        <div class="text-4xl font-bold">${{ nftTotalValue.toFixed(2) }}</div>
+      </div>
+
+      <!-- Filters and Sort -->
+      <div class="bg-[#1E293B] rounded-xl p-4 border border-[#334155]">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <!-- Left: Sort and Filter -->
+          <div class="flex items-center gap-3 flex-wrap">
+            <button 
+              (click)="setNFTSort('price-high')"
+              [class]="nftSortBy === 'price-high' ? 'bg-blue-500 text-white' : 'bg-[#334155] text-gray-300 hover:bg-[#475569]'"
+              class="px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+              </svg>
+              Price: high to low
+            </button>
+            <button 
+              (click)="setCollectionFilter(selectedCollection)"
+              class="px-4 py-2 bg-[#334155] hover:bg-[#475569] rounded-lg text-sm font-medium transition-colors flex items-center gap-2 text-gray-300">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path>
+              </svg>
+              Collections
+            </button>
+          </div>
+
+          <!-- Right: View Options -->
+          <div class="flex items-center gap-3">
+            <div class="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
+              <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"></path>
+              </svg>
+            </div>
+            <button class="px-4 py-2 bg-[#334155] hover:bg-[#475569] rounded-lg text-sm font-medium transition-colors text-gray-300">
+              Collection
+            </button>
+            <button class="px-4 py-2 bg-[#334155] hover:bg-[#475569] rounded-lg text-sm font-medium transition-colors text-gray-300">
+              List
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Loading State -->
+      <div *ngIf="isLoadingNFTs" class="bg-[#1E293B] rounded-xl p-12 border border-[#334155] text-center">
+        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+        <p class="text-gray-400">Loading NFTs...</p>
+      </div>
+
+      <!-- Empty State -->
+      <div *ngIf="!isLoadingNFTs && getFilteredNFTs().length === 0" class="bg-[#1E293B] rounded-xl p-12 border border-[#334155] text-center">
+        <svg class="w-16 h-16 text-gray-600 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+        </svg>
+        <p class="text-gray-400 text-lg mb-2">No NFTs found</p>
+        <p class="text-gray-500 text-sm">Connect your wallet to see your NFT collection</p>
+      </div>
+
+      <!-- NFT Grid -->
+      <div *ngIf="!isLoadingNFTs && getFilteredNFTs().length > 0" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        <div *ngFor="let nft of getFilteredNFTs()" class="bg-[#1E293B] rounded-xl border border-[#334155] overflow-hidden hover:border-blue-500/50 transition-all cursor-pointer group">
+          <!-- NFT Image -->
+          <div class="relative aspect-square bg-[#0F172A] overflow-hidden">
+            <img 
+              [src]="nft.imageUrl" 
+              [alt]="nft.name"
+              class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+              (error)="handleImageError($event)" />
+            <!-- Network Badge -->
+            <div class="absolute bottom-2 left-2 w-6 h-6 rounded-full bg-blue-500 flex items-center justify-center">
+              <span class="text-white text-xs font-bold">{{ nft.network.charAt(0).toUpperCase() }}</span>
+            </div>
+            <!-- Quantity Badge (if multiple) -->
+            <div *ngIf="nft.tokenId" class="absolute top-2 left-2 bg-black/50 backdrop-blur-sm px-2 py-1 rounded text-xs text-white">
+              #{{ nft.tokenId }}
+            </div>
+          </div>
+          
+          <!-- NFT Info -->
+          <div class="p-4">
+            <div class="text-sm font-semibold text-white mb-1 truncate" [title]="nft.name">
+              {{ nft.name }}
+            </div>
+            <div class="text-xs text-gray-400 truncate mb-3" [title]="nft.collectionName">
+              {{ nft.collectionName }}
+            </div>
+            <div class="text-sm font-medium text-blue-400">
+              Floor: {{ formatPrice(nft.floorPrice, nft.floorPriceCurrency) }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- History Tab Content -->
+    <div *ngIf="activeTab === 'history'" class="bg-[#1E293B] rounded-xl p-6 border border-[#334155]">
+      <h2 class="text-xl font-bold mb-4">Transaction History</h2>
+      
+      <!-- Transactions List -->
+      <div class="space-y-3">
+        <div *ngFor="let tx of transactions" class="flex items-center justify-between p-4 bg-[#0F172A] rounded-lg hover:bg-[#334155] transition-colors">
+          <div class="flex-1">
+            <div class="font-semibold text-sm">{{ tx.type }}</div>
+            <div class="text-xs text-gray-400 mt-1">{{ tx.date }}</div>
+          </div>
+          <div class="text-right">
+            <div class="text-sm font-medium" [class]="tx.amount.startsWith('+') ? 'text-green-400' : 'text-gray-300'">
+              {{ tx.amount }}
+            </div>
+            <div *ngIf="tx.token" class="text-xs text-gray-400 mt-1">{{ tx.token }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    </div>
+  </div>
+</div>
