@@ -1,1 +1,133 @@
-<p>approvals works!</p>
+<div class="min-h-screen bg-[#0F172A] text-white p-6">
+  <div class="max-w-7xl mx-auto space-y-6">
+    
+    <!-- Header -->
+    <div class="flex items-center justify-between">
+      <div>
+        <h1 class="text-3xl font-bold mb-2">Token Approvals</h1>
+        <p class="text-gray-400">Manage and revoke token approvals for your wallet</p>
+      </div>
+      <button 
+        (click)="loadApprovals()"
+        [disabled]="isLoading"
+        class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+        {{ isLoading ? 'Loading...' : 'Refresh' }}
+      </button>
+    </div>
+
+    <!-- Empty State: No Wallet Connected -->
+    <div *ngIf="!walletAddress" class="flex flex-col items-center justify-center min-h-[60vh]">
+      <div class="bg-[#1E293B] rounded-xl p-12 border border-[#334155] max-w-md w-full text-center">
+        <div class="w-24 h-24 bg-blue-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
+          <svg class="w-12 h-12 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+          </svg>
+        </div>
+        
+        <h2 class="text-2xl font-bold mb-4">No Wallet Connected</h2>
+        <p class="text-gray-400 mb-8">
+          Connect your wallet to view and manage token approvals.
+        </p>
+        
+        <button 
+          (click)="navigateToConnectWallet()"
+          class="bg-blue-500 hover:bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold text-lg transition-colors">
+          Connect Wallet
+        </button>
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="walletAddress && isLoading" class="flex items-center justify-center min-h-[40vh]">
+      <div class="text-center">
+        <div class="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+        <p class="text-gray-400">Loading approvals...</p>
+      </div>
+    </div>
+
+    <!-- Error State -->
+    <div *ngIf="walletAddress && !isLoading && error" class="bg-red-500/10 border border-red-500/50 rounded-xl p-4">
+      <div class="flex items-center gap-2">
+        <svg class="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>
+        <p class="text-red-400">{{ error }}</p>
+      </div>
+    </div>
+
+    <!-- Empty State: No Approvals -->
+    <div *ngIf="walletAddress && !isLoading && !error && approvals.length === 0" class="bg-[#1E293B] rounded-xl p-12 border border-[#334155] text-center">
+      <div class="w-24 h-24 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
+        <svg class="w-12 h-12 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>
+      </div>
+      <h2 class="text-2xl font-bold mb-2">No Active Approvals</h2>
+      <p class="text-gray-400">Your wallet has no active token approvals.</p>
+    </div>
+
+    <!-- Approvals List -->
+    <div *ngIf="walletAddress && !isLoading && !error && approvals.length > 0" class="space-y-6">
+      
+      <!-- Summary Card -->
+      <div class="bg-[#1E293B] rounded-xl p-6 border border-[#334155]">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-gray-400 text-sm mb-1">Total Active Approvals</p>
+            <p class="text-3xl font-bold">{{ approvals.length }}</p>
+          </div>
+          <div class="text-right">
+            <p class="text-gray-400 text-sm mb-1">Unique Tokens</p>
+            <p class="text-3xl font-bold">{{ getGroupedApprovals().length }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Grouped by Token -->
+      <div *ngFor="let group of getGroupedApprovals()" class="bg-[#1E293B] rounded-xl border border-[#334155] overflow-hidden">
+        <!-- Token Header -->
+        <div class="p-4 border-b border-[#334155] flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold">
+              <span>{{ group.tokenSymbol.charAt(0) }}</span>
+            </div>
+            <div>
+              <h3 class="font-semibold">{{ group.tokenSymbol }}</h3>
+              <p class="text-sm text-gray-400">{{ formatAddress(group.tokenAddress) }}</p>
+            </div>
+          </div>
+          <button
+            (click)="revokeAllForToken(group.tokenAddress)"
+            [disabled]="isRevoking"
+            class="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm">
+            Revoke All
+          </button>
+        </div>
+
+        <!-- Approvals for this token -->
+        <div class="divide-y divide-[#334155]">
+          <div *ngFor="let approval of group.approvals; let i = index" class="p-4 hover:bg-[#334155]/50 transition-colors">
+            <div class="flex items-center justify-between">
+              <div class="flex-1">
+                <div class="flex items-center gap-2 mb-2">
+                  <h4 class="font-medium">{{ approval.spenderName }}</h4>
+                  <span class="text-xs text-gray-400 bg-[#334155] px-2 py-1 rounded">{{ approval.network }}</span>
+                </div>
+                <p class="text-sm text-gray-400 mb-1">Spender: {{ formatAddress(approval.spender) }}</p>
+                <p class="text-sm text-gray-400">Allowance: <span class="text-white font-medium">{{ formatAllowance(approval.allowance) }} {{ approval.tokenSymbol }}</span></p>
+              </div>
+              <button
+                (click)="revokeApproval(approval, i)"
+                [disabled]="isRevoking"
+                class="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm ml-4">
+                {{ isRevoking && revokingIndex === i ? 'Revoking...' : 'Revoke' }}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</div>
