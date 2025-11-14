@@ -2,12 +2,9 @@
   "version": 2,
   "buildCommand": "npm run build",
   "outputDirectory": "dist/web3-portfolio-dashboard",
-  "rewrites": [
-    {
-      "source": "/(.*)",
-      "destination": "/index.html"
-    }
-  ],
+    "rewrites": [
+      { "source": "/(.*)", "destination": "/" }
+    ],
   "headers": [
     {
       "source": "/(.*)",
