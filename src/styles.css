@@ -6,6 +6,45 @@ body {
   font-family: 'Inter', sans-serif;
 }
 
+/* Global Material Dialog Styling - Remove all white backgrounds */
+::ng-deep .mat-mdc-dialog-container {
+  background: #1f1f1f !important;
+  padding: 0 !important;
+}
+
+::ng-deep .mat-mdc-dialog-surface {
+  background: #1f1f1f !important;
+  border-radius: 12px !important;
+}
+
+::ng-deep .mat-mdc-dialog-backdrop {
+  background: rgba(0, 0, 0, 0.5) !important;
+}
+
+/* Ensure all dialog content containers have dark background */
+::ng-deep .mat-mdc-dialog-content {
+  background: transparent !important;
+}
+
+::ng-deep .mat-mdc-dialog-title {
+  background: transparent !important;
+}
+
+::ng-deep .mat-mdc-dialog-actions {
+  background: transparent !important;
+}
+
+/* Remove white backgrounds from Material components inside dialogs */
+::ng-deep .mat-mdc-dialog-container .mat-mdc-button,
+::ng-deep .mat-mdc-dialog-container .mat-mdc-raised-button,
+::ng-deep .mat-mdc-dialog-container .mat-mdc-outlined-button {
+  background-color: transparent !important;
+}
+
+::ng-deep .mat-mdc-dialog-container .mat-mdc-icon-button {
+  background-color: transparent !important;
+}
+
 /* MetaMask Dialog Styling */
 ::ng-deep .metamask-dialog .mat-mdc-dialog-container {
   background: #1f1f1f !important;
@@ -24,6 +63,28 @@ body {
 }
 
 ::ng-deep .confirm-disconnect-dialog .mat-mdc-dialog-surface {
+  background: #1f1f1f !important;
+  border-radius: 12px !important;
+}
+
+/* Phantom Dialog Styling */
+::ng-deep .phantom-dialog .mat-mdc-dialog-container {
+  background: #1f1f1f !important;
+  padding: 0 !important;
+}
+
+::ng-deep .phantom-dialog .mat-mdc-dialog-surface {
+  background: #1f1f1f !important;
+  border-radius: 12px !important;
+}
+
+/* Clear Cache Dialog Styling */
+::ng-deep .clear-cache-dialog .mat-mdc-dialog-container {
+  background: #1f1f1f !important;
+  padding: 0 !important;
+}
+
+::ng-deep .clear-cache-dialog .mat-mdc-dialog-surface {
   background: #1f1f1f !important;
   border-radius: 12px !important;
 }
