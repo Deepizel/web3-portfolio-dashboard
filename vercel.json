@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "buildCommand": "npm run build",
+  "buildCommand": "ng build --configuration production",
   "outputDirectory": "dist/web3-portfolio-dashboard",
   "cleanUrls": true,
   "rewrites": [
