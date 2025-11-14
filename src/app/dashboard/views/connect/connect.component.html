@@ -1,29 +1,31 @@
-<div class="min-h-screen bg-[#12213d] text-black p-6 md:p-8">
+<div class="min-h-screen bg-[#12213d] text-black p-4 sm:p-6 md:p-8">
   <div class="max-w-4xl mx-auto">
     <!-- Title -->
-    <h1 class="text-4xl text-white md:text-5xl font-bold mb-8 md:mb-12">Connect to Barios</h1>
+    <h1 class="text-3xl sm:text-4xl md:text-5xl text-white font-bold mb-6 sm:mb-8 md:mb-12">Connect to Barios</h1>
 
     <!-- Ethereum Section -->
-    <div class="mb-8">
-      <h2 class="text-xl font-semibold mb-4 text-white">Ethereum</h2>
-      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+    <div class="mb-6 sm:mb-8">
+      <h2 class="text-lg sm:text-xl font-semibold mb-3 sm:mb-4 text-white">Ethereum</h2>
+      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 sm:gap-4">
 
                 <!-- MetaMask -->
                 <button 
-                class="flex flex-col items-center p-4 bg-[#1f1f1f] rounded-xl hover:bg-[#2a2a2a] transition-colors border border-transparent hover:border-orange-500/50"
+                class="flex flex-col items-center p-3 sm:p-4 bg-[#1f1f1f] rounded-xl hover:bg-[#2a2a2a] transition-colors border border-transparent hover:border-orange-500/50"
                 (click)="connectWallet('metamask')">
-                <div class="w-16 h-16 bg-orange-500 rounded-xl flex items-center justify-center mb-3">
-                  <img src="assets/images/svg/metamask-icon.svg" alt="MetaMask" class="w-full h-full">
+                <div class="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 bg-orange-500 rounded-xl flex items-center justify-center mb-2 sm:mb-3">
+                  <img src="assets/images/svg/metamask-icon.svg" alt="MetaMask" class="w-full h-full object-contain">
                 </div>
-                <span class="text-sm font-medium text-white">MetaMask</span>
+                <span class="text-xs sm:text-sm font-medium text-white text-center">MetaMask</span>
               </button>
 
         <!-- Phantom -->
         <button 
-          class="flex flex-col items-center p-4 bg-[#1f1f1f] rounded-xl hover:bg-[#2a2a2a] transition-colors border border-transparent hover:border-purple-500/50"
+          class="flex flex-col items-center p-3 sm:p-4 bg-[#1f1f1f] rounded-xl hover:bg-[#2a2a2a] transition-colors border border-transparent hover:border-purple-500/50"
           (click)="connectWallet('phantom')">
-          <img src="assets/images/svg/phantom-icon.svg" alt="Phantom" class="w-full h-full">
-          <span class="text-sm font-medium text-white">Phantom</span>
+          <div class="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 bg-purple-500 rounded-xl flex items-center justify-center mb-2 sm:mb-3">
+            <img src="assets/images/svg/phantom-icon.svg" alt="Phantom" class="w-full h-full object-contain">
+          </div>
+          <span class="text-xs sm:text-sm font-medium text-white text-center">Phantom</span>
         </button>
 
         <!-- Keplr -->
@@ -70,23 +72,26 @@
 
     <!-- Solana Section -->
     <div>
-      <h2 class="text-xl font-semibold mb-4 text-white">Solana</h2>
-      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+      <h2 class="text-lg sm:text-xl font-semibold mb-3 sm:mb-4 text-white">Solana</h2>
+      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 sm:gap-4">
         <!-- Phantom -->
         <button 
-          class="flex flex-col items-center p-4 bg-[#1f1f1f] rounded-xl hover:bg-[#2a2a2a] transition-colors border border-transparent hover:border-purple-500/50"
+          class="flex flex-col items-center p-3 sm:p-4 bg-[#1f1f1f] rounded-xl hover:bg-[#2a2a2a] transition-colors border border-transparent hover:border-purple-500/50"
           (click)="connectWallet('phantom-solana')">
-          <img src="assets/images/svg/phantom-icon.svg" alt="Phantom" class="w-full h-full">
-
-          <span class="text-sm font-medium text-white">Phantom</span>
+          <div class="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 bg-purple-500 rounded-xl flex items-center justify-center mb-2 sm:mb-3">
+            <img src="assets/images/svg/phantom-icon.svg" alt="Phantom" class="w-full h-full object-contain">
+          </div>
+          <span class="text-xs sm:text-sm font-medium text-white text-center">Phantom</span>
         </button>
 
         <!-- MetaMask -->
         <button 
-          class="flex flex-col items-center p-4 bg-[#1f1f1f] rounded-xl hover:bg-[#2a2a2a] transition-colors border border-transparent hover:border-orange-500/50"
+          class="flex flex-col items-center p-3 sm:p-4 bg-[#1f1f1f] rounded-xl hover:bg-[#2a2a2a] transition-colors border border-transparent hover:border-orange-500/50"
           (click)="connectWallet('metamask-solana')">
-              <img src="assets/images/svg/metamask-icon.svg" alt="MetaMask" class="w-full h-full">
-          <span class="text-sm font-medium text-white">MetaMask</span>
+          <div class="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 bg-orange-500 rounded-xl flex items-center justify-center mb-2 sm:mb-3">
+            <img src="assets/images/svg/metamask-icon.svg" alt="MetaMask" class="w-full h-full object-contain">
+          </div>
+          <span class="text-xs sm:text-sm font-medium text-white text-center">MetaMask</span>
         </button>
       </div>
     </div>
