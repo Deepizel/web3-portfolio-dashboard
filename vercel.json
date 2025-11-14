@@ -1,10 +1,10 @@
 {
-  "version": 2,
-  "builds": [
-    { "src": "dist/web3-portfolio-dashboard/**", "use": "@vercel/static" }
-  ],
-  "routes": [
-    { "handle": "filesystem" },
-    { "src": "/.*", "dest": "/index.html" }
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist/web3-portfolio-dashboard/browser",
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
   ]
 }
