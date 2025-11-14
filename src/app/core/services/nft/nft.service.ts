@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
+import { environment } from '../../environment/environment';
 
 export interface NFT {
   id: string;
@@ -33,11 +34,11 @@ export interface NFTCollection {
 export class NFTService {
   // Using Alchemy API - you can get a free API key from https://www.alchemy.com/
   // For production, store this in environment variables
-  private readonly ALCHEMY_API_KEY = 'demo'; // Replace with your Alchemy API key
-  private readonly ALCHEMY_BASE_URL = 'https://eth-mainnet.g.alchemy.com/nft/v3';
+  private readonly ALCHEMY_API_KEY = environment.alchemyApiKey; // Replace with your Alchemy API key
+  private readonly ALCHEMY_BASE_URL = environment.alchemyBaseUrl;
   
   // OpenSea API as fallback
-  private readonly OPENSEA_API_URL = 'https://api.opensea.io/api/v2';
+  private readonly OPENSEA_API_URL = environment.openseaApiUrl;
 
   constructor(private http: HttpClient) {}
 
@@ -70,7 +71,7 @@ export class NFTService {
    */
   private fetchFromAlchemy(address: string, network: string): Observable<NFT[]> {
     // If using demo key, return empty to trigger fallback
-    if (this.ALCHEMY_API_KEY === 'demo') {
+    if (!this.ALCHEMY_API_KEY) {
       throw new Error('Alchemy API key not configured');
     }
 

@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { Subscription } from 'rxjs';
 import { WalletService } from '../../../core/services/wallet/wallet.service';
+import { PortfolioCacheService } from '../../../core/services/cache/portfolio-cache.service';
 import { ConfirmDisconnectModalComponent } from '../../../shared/components/confirm-disconnect-modal/confirm-disconnect-modal.component';
 import { ClearCacheModalComponent } from '../../../shared/components/clear-cache-modal/clear-cache-modal.component';
 
@@ -42,6 +43,7 @@ export class SettingsComponent implements OnInit, OnDestroy {
 
   constructor(
     private walletService: WalletService,
+    private portfolioCache: PortfolioCacheService,
     private router: Router,
     private dialog: MatDialog
   ) {}
@@ -304,6 +306,9 @@ export class SettingsComponent implements OnInit, OnDestroy {
 
     dialogRef.afterClosed().subscribe((confirmed: boolean) => {
       if (confirmed) {
+        // Clear portfolio cache
+        this.portfolioCache.clearAllCache();
+        
         // Clear all localStorage except wallet connection
         const walletAddress = localStorage.getItem('walletAddress');
         const autoSwitchNetwork = localStorage.getItem('autoSwitchNetwork');

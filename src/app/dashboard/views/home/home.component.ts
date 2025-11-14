@@ -6,6 +6,10 @@ import { WalletService } from '../../../core/services/wallet/wallet.service';
 import { NFTService, NFT, NFTCollection } from '../../../core/services/nft/nft.service';
 import { ConfirmDisconnectModalComponent } from '../../../shared/components/confirm-disconnect-modal/confirm-disconnect-modal.component';
 import { Subscription } from 'rxjs';
+import { TransactionService } from '../../../core/services/transaction/transaction.service';
+import { AssetService } from '../../../core/services/asset/asset.service';
+import { PortfolioCacheService } from '../../../core/services/cache/portfolio-cache.service';
+import { ethers } from 'ethers';
 
 interface Asset {
   name: string;
@@ -50,7 +54,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   selectedTimeRange: '1H' | '1D' | '1W' | '1M' | '1Y' | 'Max' = '1D';
   selectedNetwork: string = 'All Networks';
   
-  assets: Asset[] = [];
+  assets: any[] = [];
   transactions: Transaction[] = [];
   graphData: GraphDataPoint[] = [];
   
@@ -64,10 +68,14 @@ export class HomeComponent implements OnInit, OnDestroy {
   
   private walletSubscription?: Subscription;
   private nftSubscription?: Subscription;
+  transEmpty: boolean = false;
 
   constructor(
     private walletService: WalletService,
+    private transactionService: TransactionService,
+    private assetService: AssetService,
     private nftService: NFTService,
+    private portfolioCache: PortfolioCacheService,
     private dialog: MatDialog,
     private router: Router
   ) {}
@@ -76,6 +84,9 @@ export class HomeComponent implements OnInit, OnDestroy {
     // Get initial wallet address
     this.walletAddress = this.walletService.getCurrentAddress();
     if (this.walletAddress) {
+      // Load cached data immediately for instant display
+      this.loadCachedData(this.walletAddress);
+      // Then load fresh data
       this.loadWalletData();
     }
 
@@ -83,10 +94,15 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.walletSubscription = this.walletService.getWalletAddress().subscribe(async (address) => {
       this.walletAddress = address;
       if (address) {
+        // Load cached data immediately
+        this.loadCachedData(address);
+        // Then fetch fresh data in background
         await this.loadWalletData();
+        this.fetchTransactions(address, true); // true = background refresh
+        this.getAssets(address, 'USD', true); // true = background refresh
         // Load NFTs if NFTs tab is active
         if (this.activeTab === 'nfts') {
-          this.loadNFTs();
+          this.loadNFTs(true); // true = background refresh
         }
       } else {
         // Reset values if wallet disconnected
@@ -97,12 +113,48 @@ export class HomeComponent implements OnInit, OnDestroy {
         this.nfts = [];
         this.nftCollections = [];
         this.nftTotalValue = 0;
+        this.assets = [];
+        this.transactions = [];
       }
     });
 
+    // listen to transaction changes
+    this.walletService.listenToAccountChanges((address) => {
+      this.fetchTransactions(address, true);
+      this.getAssets(address, 'USD', true);
+    });
+
     // Load initial data
-    this.loadMockData();
     this.generateGraphData();
+  }
+
+  /**
+   * Load cached data immediately for instant display
+   */
+  loadCachedData(address: string): void {
+    const cached = this.portfolioCache.getPortfolioData(address);
+    if (cached) {
+      // Load assets
+      if (cached.assets) {
+        this.assets = cached.assets.assets || [];
+        this.totalValue = cached.assets.totalValue || 0;
+        this.balance = cached.assets.balance || '0.00';
+        this.updateChange();
+      }
+
+      // Load transactions
+      if (cached.transactions) {
+        this.transactions = cached.transactions.transactions || [];
+        this.transEmpty = this.transactions.length === 0;
+      }
+
+      // Load NFTs
+      if (cached.nfts) {
+        this.nfts = cached.nfts.nfts || [];
+        this.nftCollections = cached.nfts.nftCollections || [];
+        this.nftTotalValue = cached.nfts.nftTotalValue || 0;
+      }
+    }
   }
 
   ngOnDestroy() {
@@ -124,6 +176,154 @@ export class HomeComponent implements OnInit, OnDestroy {
         this.updateChange();
       }
     }
+  }
+
+  // get assets for a wallet
+  // Optimized to properly fetch and display prices
+  getAssets(address: string, currency: 'USD' | 'NGN' = 'USD', backgroundRefresh: boolean = false) {
+    this.assetService.getTokenBalances(address).subscribe({
+      next: async (res: any) => {
+        const tokenBalances = res.result.tokenBalances || [];
+        
+        // Initialize assets array with empty state
+        const assets: Asset[] = [];
+        this.assets = assets; // Clear existing assets immediately for better UX
+  
+        // Process tokens sequentially to avoid rate limiting
+        for (const token of tokenBalances) {
+          if (token.tokenBalance === '0x0') continue; // skip zero balance
+  
+          try {
+            // 1. Fetch metadata
+            const metadata: any = await this.assetService.getTokenMetadata(token.contractAddress).toPromise();
+            const decimals = metadata?.result?.decimals || 18;
+            const symbol = metadata?.result?.symbol || 'UNKNOWN';
+            const name = metadata?.result?.name || symbol;
+            const logo = metadata?.result?.logo || '';
+            
+            // 2. Format balance
+            const balance = parseFloat(ethers.formatUnits(token.tokenBalance, decimals));
+
+            // 3. Fetch price (from CoinGecko)
+            let price = 0;
+            let priceFormatted = '$0.00';
+            try {
+              const priceData: any = await this.assetService.getTokenPrice(symbol, currency).toPromise();
+              
+              // Extract price from CoinGecko response
+              // CoinGecko returns: { "ethereum": { "usd": 3000 } } or { "usd-coin": { "usd": 1 } }
+              const coinId = this.assetService.getCoinGeckoId(symbol);
+              if (coinId && priceData && priceData[coinId]) {
+                const currencyKey = currency.toLowerCase();
+                price = priceData[coinId][currencyKey] || 0;
+                
+                // Format price based on currency
+                if (currency === 'USD') {
+                  priceFormatted = price >= 1 
+                    ? `$${price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+                    : `$${price.toFixed(6)}`;
+                } else if (currency === 'NGN') {
+                  priceFormatted = price >= 1 
+                    ? `₦${price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+                    : `₦${price.toFixed(6)}`;
+                }
+              }
+            } catch (priceError) {
+              console.warn(`Failed to fetch price for ${symbol}:`, priceError);
+              // Keep price as 0 if fetch fails
+            }
+
+            // 4. Calculate value
+            const value = balance * price;
+            const valueFormatted = currency === 'USD' 
+              ? `$${value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+              : `₦${value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+            // 5. Format balance display
+            const balanceFormatted = balance >= 1 
+              ? `${balance.toLocaleString('en-US', { maximumFractionDigits: 4 })} ${symbol}`
+              : `${balance.toFixed(6)} ${symbol}`;
+
+            // 6. Create asset object with all required fields
+            const asset: Asset = {
+              name: name,
+              symbol: symbol,
+              percentage: 0, // Will be calculated after all assets are loaded
+              networks: metadata?.result?.chain || 'Ethereum',
+              price: priceFormatted,
+              balance: balanceFormatted,
+              value: valueFormatted,
+              change: 0, // Price change not available from current API
+              changeValue: '$0.00',
+              logo: logo
+            };
+
+            assets.push(asset);
+            
+            // Update UI incrementally as each asset is processed
+            this.assets = [...assets];
+            
+          } catch (error) {
+            console.error(`Error processing token ${token.contractAddress}:`, error);
+            // Continue processing other tokens even if one fails
+          }
+        }
+
+        // Calculate percentages after all assets are loaded
+        const totalValue = assets.reduce((sum, asset) => {
+          const numericValue = parseFloat(asset.value.replace(/[^0-9.-]+/g, ''));
+          return sum + numericValue;
+        }, 0);
+
+        // Update percentages
+        assets.forEach(asset => {
+          const numericValue = parseFloat(asset.value.replace(/[^0-9.-]+/g, ''));
+          asset.percentage = totalValue > 0 ? (numericValue / totalValue) * 100 : 0;
+        });
+
+        // Final update with percentages
+        this.assets = assets;
+        
+        // Update total value
+        this.totalValue = totalValue;
+        this.updateChange();
+        
+        // Save to cache
+        this.portfolioCache.saveAssets(address, assets, totalValue, this.balance);
+        
+        console.log('Assets loaded:', this.assets);
+      },
+      error: (error) => {
+        console.error('Error fetching token balances:', error);
+        this.assets = [];
+      }
+    });
+  }
+  
+// fetech all trans 
+  fetchTransactions(address: string, backgroundRefresh: boolean = false) {
+    this.transactionService.getTransactions(address).subscribe({
+      next: (res: any) => {
+        this.transactions = res.result.transfers || [];
+        if (this.transactions.length > 0) {
+          this.transactions = this.transactions.slice(0, 10);
+        } else {
+          this.transEmpty = true;
+        }
+        
+        // Save to cache
+        this.portfolioCache.saveTransactions(address, this.transactions);
+        
+        console.log('Transactions loaded:', this.transactions);
+      },
+      error: (error) => {
+        console.error('Error fetching transactions:', error);
+        // If background refresh fails, keep cached data
+        if (!backgroundRefresh) {
+          this.transEmpty = true;
+        }
+      }
+    });
   }
 
   updateChange() {
@@ -203,8 +403,18 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   setActiveTab(tab: 'tokens' | 'nfts' | 'history') {
     this.activeTab = tab;
-    if (tab === 'nfts' && this.walletAddress && this.nfts.length === 0) {
-      this.loadNFTs();
+    if (tab === 'nfts' && this.walletAddress) {
+      // Load cached NFTs immediately if available
+      const cached = this.portfolioCache.getPortfolioData(this.walletAddress);
+      if (cached?.nfts && this.nfts.length === 0) {
+        this.nfts = cached.nfts.nfts || [];
+        this.nftCollections = cached.nfts.nftCollections || [];
+        this.nftTotalValue = cached.nfts.nftTotalValue || 0;
+      }
+      // Then refresh in background if needed
+      if (this.nfts.length === 0 || this.portfolioCache.hasStaleCache(this.walletAddress)) {
+        this.loadNFTs(true);
+      }
     }
   }
 
@@ -259,61 +469,71 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   // NFT Methods
-  loadNFTs() {
+  loadNFTs(backgroundRefresh: boolean = false) {
     if (!this.walletAddress) {
       return;
     }
 
-    this.isLoadingNFTs = true;
+    // Only show loading if not a background refresh
+    if (!backgroundRefresh) {
+      this.isLoadingNFTs = true;
+    }
+
     this.nftSubscription = this.nftService.getNFTsByAddress(this.walletAddress).subscribe({
       next: (nfts) => {
         this.nfts = nfts;
         this.nftCollections = this.nftService.groupNFTsByCollection(nfts);
         this.calculateNFTTotalValue();
+        
+        // Save to cache
+        this.portfolioCache.saveNFTs(this.walletAddress!, nfts, this.nftCollections, this.nftTotalValue);
+        
         this.isLoadingNFTs = false;
       },
       error: (error) => {
         console.error('Error loading NFTs:', error);
         this.isLoadingNFTs = false;
-        // Fallback to mock data if API fails
-        this.loadMockNFTs();
+        // Fallback to mock data if API fails and no cache available
+        if (!backgroundRefresh) {
+          // this.loadMockNFTs();
+        }
       }
     });
   }
 
-  loadMockNFTs() {
-    // Mock NFT data for demonstration
-    this.nfts = [
-      {
-        id: '1',
-        tokenId: '123',
-        contractAddress: '0x1234...',
-        name: 'Rodeo posts',
-        description: 'kitty',
-        imageUrl: 'https://via.placeholder.com/300',
-        collectionName: 'Rodeo posts',
-        floorPrice: 0.0005,
-        floorPriceCurrency: 'ETH',
-        network: 'ethereum',
-        owner: this.walletAddress || ''
-      },
-      {
-        id: '2',
-        tokenId: '456',
-        contractAddress: '0x5678...',
-        name: 'BBM',
-        description: 'BIG BROTHER MUSICAL',
-        imageUrl: 'https://via.placeholder.com/300',
-        collectionName: 'www.token-maker.app - 5xd9t...',
-        floorPrice: 14.734,
-        floorPriceCurrency: 'POL',
-        network: 'polygon',
-        owner: this.walletAddress || ''
-      }
-    ];
-    this.nftCollections = this.nftService.groupNFTsByCollection(this.nfts);
-    this.calculateNFTTotalValue();
-  }
+  // loadMockNFTs() {
+  //   // Mock NFT data for demonstration
+  //   this.nfts = [
+  //     {
+  //       id: '1',
+  //       tokenId: '123',
+  //       contractAddress: '0x1234...',
+  //       name: 'Rodeo posts',
+  //       description: 'kitty',
+  //       imageUrl: 'https://via.placeholder.com/300',
+  //       collectionName: 'Rodeo posts',
+  //       floorPrice: 0.0005,
+  //       floorPriceCurrency: 'ETH',
+  //       network: 'ethereum',
+  //       owner: this.walletAddress || ''
+  //     },
+  //     {
+  //       id: '2',
+  //       tokenId: '456',
+  //       contractAddress: '0x5678...',
+  //       name: 'BBM',
+  //       description: 'BIG BROTHER MUSICAL',
+  //       imageUrl: 'https://via.placeholder.com/300',
+  //       collectionName: 'www.token-maker.app - 5xd9t...',
+  //       floorPrice: 14.734,
+  //       floorPriceCurrency: 'POL',
+  //       network: 'polygon',
+  //       owner: this.walletAddress || ''
+  //     }
+  //   ];
+  //   this.nftCollections = this.nftService.groupNFTsByCollection(this.nfts);
+  //   this.calculateNFTTotalValue();
+  // }
 
   calculateNFTTotalValue() {
     this.nftTotalValue = this.nfts.reduce((total, nft) => {
@@ -395,6 +615,11 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   disconnectWallet() {
+    // Clear cache for this wallet before disconnecting
+    if (this.walletAddress) {
+      this.portfolioCache.clearCache(this.walletAddress);
+    }
+    
     this.walletService.disconnectWallet();
     // Reset all component state
     this.walletAddress = null;

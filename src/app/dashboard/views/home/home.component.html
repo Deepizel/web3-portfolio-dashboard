@@ -167,7 +167,7 @@
           <div class="flex items-center justify-between mb-4">
             <h2 class="text-xl font-bold">Assets</h2>
             <div class="flex items-center gap-2">
-              <button class="px-3 py-1 bg-[#334155] hover:bg-[#475569] rounded-lg text-sm font-medium transition-colors">
+              <!-- <button class="px-3 py-1 bg-[#334155] hover:bg-[#475569] rounded-lg text-sm font-medium transition-colors">
                 By App
               </button>
               <button class="px-3 py-1 bg-[#334155] hover:bg-[#475569] rounded-lg text-sm font-medium transition-colors">
@@ -177,7 +177,7 @@
                 <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path>
                 </svg>
-              </button>
+              </button> -->
             </div>
           </div>
           
@@ -187,7 +187,6 @@
               <thead>
                 <tr class="text-left text-gray-400 text-sm border-b border-[#334155]">
                   <th class="pb-3">Asset</th>
-                  <th class="pb-3">%</th>
                   <th class="pb-3">Networks</th>
                   <th class="pb-3">Price</th>
                   <th class="pb-3">Balance</th>
@@ -199,23 +198,22 @@
                   <td class="py-4">
                     <div class="flex items-center gap-3">
                       <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold">
-                        {{ asset.symbol.charAt(0) }}
+                        <img [src]="asset.logo" [alt]="asset.name" class="w-full h-full object-cover rounded-full">
                       </div>
                       <div>
-                        <div class="font-semibold">{{ asset.name }}</div>
+                        <!-- <div class="font-semibold">{{ asset.name }}</div> -->
                         <div class="text-sm text-gray-400">{{ asset.symbol }}</div>
                       </div>
                     </div>
                   </td>
-                  <td class="py-4 text-gray-300">{{ asset.percentage }}%</td>
                   <td class="py-4 text-gray-300 text-sm">{{ asset.networks }}</td>
                   <td class="py-4 text-gray-300">{{ asset.price }}</td>
                   <td class="py-4 text-gray-300">{{ asset.balance }}</td>
                   <td class="py-4 text-right">
                     <div class="font-semibold">{{ asset.value }}</div>
-                    <div [class]="asset.change >= 0 ? 'text-green-400' : 'text-red-400'" class="text-sm">
+                    <!-- <div [class]="asset.change >= 0 ? 'text-green-400' : 'text-red-400'" class="text-sm">
                       {{ asset.change >= 0 ? '+' : '' }}{{ asset.change.toFixed(2) }}% ({{ asset.changeValue }})
-                    </div>
+                    </div> -->
                   </td>
                 </tr>
               </tbody>
@@ -230,6 +228,7 @@
           <h2 class="text-xl font-bold mb-4">History</h2>
           
           <!-- Transactions List -->
+           @if(!transEmpty){
           <div class="space-y-3 max-h-[600px] overflow-y-auto">
             <div *ngFor="let tx of transactions" class="flex items-center justify-between p-3 bg-[#0F172A] rounded-lg hover:bg-[#1E293B] transition-colors">
               <div class="flex-1">
@@ -244,7 +243,15 @@
               </div>
             </div>
           </div>
-          
+        }@else{
+          <div class="bg-[#1E293B] rounded-xl p-12 border border-[#334155] text-center">
+            <svg class="w-16 h-16 text-gray-600 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+            </svg>
+            <p class="text-gray-400 text-lg mb-2">No transactions found</p>
+            <p class="text-gray-500 text-sm">Make some transactions to see your transaction history</p>
+          </div>
+        }
           <!-- See All Button -->
           <button class="w-full mt-4 py-2 text-center text-blue-400 hover:text-blue-300 font-medium transition-colors">
             See all
@@ -356,7 +363,15 @@
     <!-- History Tab Content -->
     <div *ngIf="activeTab === 'history'" class="bg-[#1E293B] rounded-xl p-6 border border-[#334155]">
       <h2 class="text-xl font-bold mb-4">Transaction History</h2>
-      
+      @if(transEmpty){
+        <div class="bg-[#1E293B] rounded-xl p-12 border border-[#334155] text-center">
+          <svg class="w-16 h-16 text-gray-600 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+          </svg>
+          <p class="text-gray-400 text-lg mb-2">No transactions found</p>
+          <p class="text-gray-500 text-sm">Make some transactions to see your transaction history</p>
+        </div>
+      }@else{
       <!-- Transactions List -->
       <div class="space-y-3">
         <div *ngFor="let tx of transactions" class="flex items-center justify-between p-4 bg-[#0F172A] rounded-lg hover:bg-[#334155] transition-colors">
@@ -372,6 +387,7 @@
           </div>
         </div>
       </div>
+    }
     </div>
     </div>
   </div>

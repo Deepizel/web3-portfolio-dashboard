@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { ethers } from 'ethers';
+import { environment } from '../../environment/environment';
 
 @Injectable({
   providedIn: 'root',
@@ -10,7 +11,9 @@ export class WalletService {
   private signer!: ethers.JsonRpcSigner;
   private address: string | null = null;
   private walletAddress$ = new BehaviorSubject<string | null>(null);
-
+  private ALCHEMY_KEY = environment.alchemyApiKey;
+  private API_URL = `https://eth-mainnet.g.alchemy.com/v2/${environment.alchemyApiKey}`
+  
   constructor() {
     this.initProvider();
     this.checkExistingConnection();
