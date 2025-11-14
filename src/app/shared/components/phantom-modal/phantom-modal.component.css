@@ -1,4 +1,4 @@
-.metamask-modal {
+.phantom-modal {
   background: #1f1f1f;
   background-color: none !important;
   color: white;
@@ -7,7 +7,7 @@
 }
 
 @media (max-width: 640px) {
-  .metamask-modal {
+  .phantom-modal {
     min-width: 90vw;
   }
 }

@@ -1,0 +1,82 @@
+<div class="clear-cache-modal p-6">
+  <div class="flex items-center justify-between mb-6">
+    <h2 class="text-2xl font-bold text-white">Clear Cached Data</h2>
+    <button 
+      mat-icon-button 
+      (click)="cancel()"
+      class="text-gray-400 hover:text-white">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+      </svg>
+    </button>
+  </div>
+
+  <div class="mb-6">
+    <div class="flex items-center justify-center mb-4">
+      <div class="w-20 h-20 bg-orange-500/20 rounded-full flex items-center justify-center border-2 border-orange-500">
+        <svg class="w-10 h-10 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+        </svg>
+      </div>
+    </div>
+    
+    <p class="text-gray-300 text-center mb-4">
+      Are you sure you want to clear all cached data?
+    </p>
+    
+    <div class="bg-[#0F172A] rounded-lg p-4 mb-4">
+      <p class="text-sm text-gray-400 mb-3 font-semibold">This will reset:</p>
+      <ul class="text-sm text-gray-300 space-y-2">
+        <li class="flex items-start gap-2">
+          <svg class="w-5 h-5 text-orange-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+          <span>Session data</span>
+        </li>
+        <li class="flex items-start gap-2">
+          <svg class="w-5 h-5 text-orange-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+          <span>Token preferences</span>
+        </li>
+        <li class="flex items-start gap-2">
+          <svg class="w-5 h-5 text-orange-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+          <span>Local preferences</span>
+        </li>
+      </ul>
+    </div>
+    
+    <div class="bg-blue-500/20 border border-blue-500/50 rounded-lg p-3 mb-4">
+      <p class="text-sm text-blue-300 text-center">
+        <svg class="w-4 h-4 inline-block mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>
+        Your wallet connection will remain active.
+      </p>
+    </div>
+    
+    <p class="text-gray-400 text-sm text-center">
+      The page will reload after clearing the data.
+    </p>
+  </div>
+
+  <div class="flex flex-col gap-3">
+    <button 
+      mat-raised-button 
+      color="warn"
+      (click)="confirm()"
+      class="w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 rounded-lg">
+      Yes, Clear Data
+    </button>
+
+    <button 
+      mat-button 
+      (click)="cancel()"
+      class="w-full text-gray-400 hover:text-white">
+      Cancel
+    </button>
+  </div>
+</div>
+

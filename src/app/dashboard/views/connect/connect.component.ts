@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { WalletService } from '../../../core/services/wallet/wallet.service';
 import { MetaMaskModalComponent } from '../../../shared/components/metamask-modal/metamask-modal.component';
+import { PhantomModalComponent } from '../../../shared/components/phantom-modal/phantom-modal.component';
 
 @Component({
   selector: 'app-connect',
@@ -49,17 +50,26 @@ export class ConnectComponent {
   }
 
   private connectPhantom() {
-    if (typeof window !== 'undefined' && (window as any).phantom?.solana) {
-      (window as any).phantom.solana.connect()
-        .then((response: any) => {
-          console.log('Phantom connected:', response.publicKey.toString());
-        })
-        .catch((error: any) => {
-          console.error('Phantom connection failed:', error);
-        });
-    } else {
-      alert('Phantom wallet not detected. Please install Phantom extension.');
-    }
+    // Always show modal for consistency (it will handle connection and not-available states)
+    this.openPhantomModal();
+  }
+
+  private openPhantomModal() {
+    const dialogRef = this.dialog.open(PhantomModalComponent, {
+      width: '450px',
+      maxWidth: '90vw',
+      panelClass: 'phantom-dialog',
+      disableClose: false,
+      data: {}
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result && result.connected) {
+        console.log('Phantom connected successfully:', result.address);
+        // Navigate to home component after successful connection
+        this.router.navigate(['/dashboard/home']);
+      }
+    });
   }
 
   private connectWalletConnect() {

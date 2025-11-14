@@ -4,6 +4,8 @@ import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { WalletService } from '../../../core/services/wallet/wallet.service';
+import { MatDialog } from '@angular/material/dialog';
+import { MetaMaskModalComponent } from '../metamask-modal/metamask-modal.component';
 
 @Component({
   selector: 'app-sidebar',
@@ -20,9 +22,11 @@ export class SidebarComponent implements OnInit, OnDestroy {
   private walletSubscription?: Subscription;
   private initialLoad: boolean = true;
 
-  constructor(private router: Router,
+  constructor(
+    private router: Router,
     private sidebarService: ToggleService,
-    private walletService: WalletService
+    private walletService: WalletService,
+    private dialog: MatDialog
   ) {}
 
   ngOnInit() {
@@ -79,7 +83,27 @@ export class SidebarComponent implements OnInit, OnDestroy {
   }
 
   connectWallet() {
-    this.router.navigate(['/dashboard/connect-wallet']);
+
+
+          // Navigate to connect wallet page if MetaMask is available
+          this.router.navigate(['/dashboard/connect-wallet']);
+  }
+
+  private openMetaMaskModal() {
+    const dialogRef = this.dialog.open(MetaMaskModalComponent, {
+      width: '450px',
+      maxWidth: '90vw',
+      panelClass: 'metamask-dialog',
+      disableClose: false,
+      data: {}
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result && result.connected) {
+        console.log('MetaMask connected successfully:', result.address);
+        // Wallet is now connected, no need to navigate
+      }
+    });
   }
 
   logOut() {
@@ -92,7 +116,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
   }
 
   getSidebarClasses(): string {
-    const baseClasses = 'h-screen bg-[#101828] text-[#EDF7F6] flex flex-col transition-all duration-300';
+    const baseClasses = 'h-screen bg-[#111d33] text-[#EDF7F6] flex flex-col transition-all duration-300 border-r border-white/10';
     
     if (this.isMobile) {
       // On mobile/tablet: hide when collapsed, show as overlay when expanded

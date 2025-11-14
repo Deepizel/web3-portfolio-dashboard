@@ -1,13 +1,12 @@
-.metamask-modal {
+.clear-cache-modal {
   background: #1f1f1f;
-  background-color: none !important;
   color: white;
   min-width: 400px;
   border-radius: 12px;
 }
 
 @media (max-width: 640px) {
-  .metamask-modal {
+  .clear-cache-modal {
     min-width: 90vw;
   }
 }

@@ -51,6 +51,7 @@
     <li>
       <a
         routerLink="/dashboard"
+        [routerLinkActiveOptions]="{exact: false}"
         routerLinkActive="font-semibold bg-[#013F7A] rounded-lg"
         [class]="sidebarCollapsed ? 'flex items-center justify-center py-2 px-2 text-base font-medium rounded-lg transition-all duration-300 ease-in-out hover:bg-[#013F7A] hover:text-white' : 'flex items-center py-2 px-3 text-base font-medium rounded-lg transition-all duration-300 ease-in-out hover:bg-[#013F7A] hover:text-white'"
       >
@@ -68,30 +69,24 @@
     <!-- Rewards -->
     <li>
       <a
-        routerLink="/dashboard"
+        routerLink="/dashboard/approvals"
+        [routerLinkActiveOptions]="{exact: true}"
         routerLinkActive="font-semibold bg-[#013F7A] rounded-lg"
         [class]="sidebarCollapsed ? 'flex items-center justify-center py-2 px-2 text-base font-medium rounded-lg transition-all duration-300 ease-in-out hover:bg-[#013F7A] hover:text-white' : 'flex items-center py-2 px-3 text-base font-medium rounded-lg transition-all duration-300 ease-in-out hover:bg-[#013F7A] hover:text-white'"
       >
-        <span [class]="sidebarCollapsed ? 'w-5' : 'mr-4 w-5'">
-          <svg class="w-5 h-5" fill="url(#gradient)" viewBox="0 0 24 24">
-            <defs>
-              <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" style="stop-color:#a855f7;stop-opacity:1" />
-                <stop offset="50%" style="stop-color:#f97316;stop-opacity:1" />
-                <stop offset="100%" style="stop-color:#ec4899;stop-opacity:1" />
-              </linearGradient>
-            </defs>
-            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-          </svg>
-        </span>
+      <span [class]="sidebarCollapsed ? 'w-5' : 'mr-4 w-5'">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
+        </svg>
+      </span>
         @if (!sidebarCollapsed) {
-          <span>Rewards</span>
+          <span>Approval</span>
         }
       </a>
     </li>
 
     <!-- Favorites -->
-    <li>
+    <!-- <li>
       <a
         routerLink="/dashboard"
         routerLinkActive="font-semibold bg-[#013F7A] rounded-lg"
@@ -106,10 +101,10 @@
           <span>Favorites</span>
         }
       </a>
-    </li>
+    </li> -->
 
     <!-- Swap -->
-    <li>
+    <!-- <li>
       <a
         routerLink="/dashboard"
         routerLinkActive="font-semibold bg-[#013F7A] rounded-lg"
@@ -124,12 +119,13 @@
           <span>Swap</span>
         }
       </a>
-    </li>
+    </li> -->
 
     <!-- Settings -->
     <li>
       <a
-        routerLink="/dashboard"
+        routerLink="/dashboard/settings"
+        [routerLinkActiveOptions]="{exact: true}"
         routerLinkActive="font-semibold bg-[#013F7A] rounded-lg"
         [class]="sidebarCollapsed ? 'flex items-center justify-center py-2 px-2 text-base font-medium rounded-lg transition-all duration-300 ease-in-out hover:bg-[#013F7A] hover:text-white' : 'flex items-center py-2 px-3 text-base font-medium rounded-lg transition-all duration-300 ease-in-out hover:bg-[#013F7A] hover:text-white'"
       >

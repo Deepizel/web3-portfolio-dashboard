@@ -1,0 +1,124 @@
+<section class="space-y-4">
+    <h2 class="text-lg text-white font-semibold">Wallet</h2>
+  
+        <div class="p-4 border border-white/10 rounded-xl flex justify-between items-center bg-[#1f4859] hover:border-amber-500">
+      <div>
+        <p class="text-white font-medium">Connected Wallet</p>
+        <p class="text-sm text-gray-400">{{ truncatedWalletAddress }}</p>
+      </div>
+  
+      <button 
+        (click)="openDisconnectModal()"
+        disabled="{{ !walletAddress }}"
+        class="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors">
+        Disconnect
+      </button>
+    </div>
+  
+    <div class="p-4 border border-white/10 rounded-xl flex justify-between items-center bg-[#1f4859] hover:border-amber-500">
+      <div>
+        <p class="text-white font-medium">Switch Wallet</p>
+        <p class="text-sm text-gray-400">Connect a different wallet</p>
+      </div>
+  
+      <button 
+        (click)="switchWallet()"
+        disabled="{{ !walletAddress }}"
+        class="px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg transition-colors">
+        Switch
+      </button>
+    </div>
+  </section>
+  
+  <section class="space-y-4 mt-10">
+    <h2 class="text-lg text-white font-semibold">Network</h2>
+  
+    <div class="p-4 border border-white/10 rounded-xl flex justify-between items-center bg-[#1f4859] hover:border-amber-500">
+      <div>
+        <p class="text-white font-medium">Active Network</p>
+        <p class="text-sm text-gray-400">{{ currentNetwork }}</p>
+      </div>
+      <button 
+        (click)="changeNetwork()"
+        class="px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg transition-colors">
+        Change
+      </button>
+    </div>
+  
+    <div class="p-4 border border-white/10 rounded-xl flex justify-between items-center bg-[#1f4859] hover:border-amber-500">
+      <div>
+        <p class="text-white text-sm font-medium">Auto-Switch Network</p>
+        <p class="text-sm text-gray-400">Switch automatically when a contract requires</p>
+      </div>
+  
+      <input 
+        type="checkbox" 
+        class="toggle toggle-primary" 
+        [checked]="autoSwitchNetwork"
+        (change)="onAutoSwitchToggle($event)" />
+    </div>
+  </section>
+
+  <section class="space-y-4 mt-10">
+    <h2 class="text-lg text-white font-semibold">Permissions</h2>
+  
+    <div class="p-4 border border-white/10 rounded-xl flex justify-between items-center bg-[#1f4859] hover:border-amber-500">
+      <p class="text-white text-sm font-medium">DApp Permissions</p>
+      <p class="text-sm text-gray-400 mt-1">
+        Manage approved smart contracts or revoked allowances
+      </p>
+      <button 
+        (click)="manageDAppPermissions()"
+        class="mt-3 px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white rounded-lg transition-colors">
+        Manage
+      </button>
+    </div>
+  
+    <div class="p-4 border border-white/10 rounded-xl flex justify-between items-center bg-[#1f4859] hover:border-amber-500 hover:bg-amber-500/10">
+      <p class="text-white text-sm font-medium">Session Timeout</p>
+      <p class="text-sm text-gray-400 mt-1">
+        Auto-disconnect wallet after {{ sessionTimeout }} minutes of inactivity
+      </p>
+      <button 
+        (click)="configureSessionTimeout()"
+        class="mt-3 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">
+        Configure
+      </button>
+    </div>
+  </section>
+  
+  <section class="space-y-4 mt-10">
+    <h2 class="text-lg text-white font-semibold">Appearance</h2>
+  
+    <!-- Currency -->
+    <div class="p-4 border border-white/10 rounded-xl flex justify-between items-center bg-[#1f4859] hover:border-amber-500 hover:bg-amber-500/10">
+      <div>
+        <p class="text-white font-medium">Display Currency</p>
+        <p class="text-sm text-gray-400">{{ displayCurrency }}</p>
+      </div>
+      <button 
+        (click)="changeCurrency()"
+        class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">
+        Change
+      </button>
+    </div>
+  </section>
+  
+  <section class="space-y-4 mt-10">
+    <h2 class="text-lg text-white font-semibold">Data & Storage</h2>
+  
+    <div class="p-4 border border-white/10 rounded-xl flex justify-between items-center bg-[#1f4859] hover:border-amber-500 hover:bg-amber-500/10">
+      <div>
+        <p class="text-white text-sm font-medium">Clear Cached Data</p>
+        <p class="text-sm text-gray-400">Reset session data, tokens & local prefs</p>
+      </div>
+      <button 
+        (click)="clearCachedData()"
+        class="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors">
+        Clear
+      </button>
+    </div>
+  </section>
+  
+  
+  
