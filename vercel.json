@@ -4,7 +4,7 @@
   "outputDirectory": "dist/web3-portfolio-dashboard",
   "cleanUrls": true,
   "rewrites": [
-    { "source": "/(.*)", "destination": "/" }
+    { "source": "/(.*)", "destination": "/index.html" }
   ],
   "headers": [
     {
@@ -35,4 +35,3 @@
     }
   ]
 }
-
